@@ -6,12 +6,9 @@ function InstaIcon() { return <svg viewBox="0 0 24 24" aria-hidden="true" fill="
 
 export function SocialLinks() {
   return <div className="social-links">
-    <a href={X_URL} target="_blank" rel="noopener noreferrer" aria-label="EarnRight on X"><XIcon /></a>
-    <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="EarnRight on Instagram"><InstaIcon /></a>
-    <a href={SUPPORT_WHATSAPP} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp support"><MessageCircle /></a>
+    <a href={X_URL} target="_blank" rel="noopener noreferrer" aria-label="EarnRight on X" title="EarnRight on X"><XIcon /></a>
+    <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="EarnRight on Instagram" title="EarnRight on Instagram"><InstaIcon /></a>
+    <a href={SUPPORT_WHATSAPP} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp support" title="Support on WhatsApp"><MessageCircle /></a>
   </div>;
 }
 
-export function SupportButton() {
-  return <a className="support-fab" href={SUPPORT_WHATSAPP} target="_blank" rel="noopener noreferrer" aria-label="Contact support on WhatsApp" title="Support on WhatsApp"><MessageCircle /></a>;
-}

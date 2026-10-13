@@ -22,6 +22,13 @@
       "when": 1791857895686,
       "tag": "0002_offer_images_read",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791858482838,
+      "tag": "0003_repeat_video_and_task_offers",
+      "breakpoints": true
     }
   ]
 }

@@ -15,3 +15,6 @@
 - Admin role is granted by the signup trigger to the owner email and checked via has_role; payouts/rewards change only through SECURITY DEFINER RPCs (why: prevents client tampering).
 - Ban and password reset run in admin server functions using the service client after a has_role check (why: need auth admin API).
 - Offer images live in a private bucket and are shown with signed URLs (why: public buckets are blocked).
+- Enforce offer repeat eligibility in submit_offer under a per-user/offer transaction lock, and keep each repeat as a separate reviewed ledger entry (why: avoids duplicate one-time rewards and preserves repeat history).
+- Use SocialLinks for grouped support and social links; show the group in the dashboard footer when the sidebar is hidden (why: keeps contact links together and available on mobile).
+- Animate the welcome car blink with aligned open/closed image layers sharing identical drift transforms; disable the blink for reduced motion (why: preserves the existing artwork without a heavy 3D runtime).
