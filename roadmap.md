@@ -1,2 +1,3 @@
 - [ ] Apply and verify unlimited video submissions and one-time other offers.
 - [ ] Keep support beside social icons on desktop and mobile.
+- [ ] Remove the separate green support icon and make the welcome car eyes blink.
