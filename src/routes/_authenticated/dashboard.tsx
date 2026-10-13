@@ -5,7 +5,7 @@ import { ArrowUpRight, LayoutGrid, Gamepad2, Play, ListChecks, Wallet, History, 
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Brand } from '@/components/brand';
-import { SocialLinks, SupportButton } from '@/components/social-links';
+import { SocialLinks } from '@/components/social-links';
 import { dashboardOptions } from '@/lib/earnings';
 import { money } from '@/lib/links';
 import { pageMeta } from '@/lib/meta';
@@ -26,7 +26,10 @@ function Dashboard() {
   async function logout() { await qc.cancelQueries(); qc.clear(); await supabase.auth.signOut(); await navigate({ to: '/auth', search: { mode: 'login' }, replace: true }); }
   async function submit(e: FormEvent) { e.preventDefault(); if (!active) return; setBusy(true); const { error } = await supabase.rpc('submit_offer', { _offer: active, _proof: proof }); setBusy(false); if (error) { toast.error(error.message); return; } toast.success('Submitted for review'); setActive(null); setProof(''); refresh(); }
   async function withdraw(e: FormEvent) { e.preventDefault(); setBusy(true); const { error } = await supabase.rpc('request_withdrawal', { _amount: Number(amount), _method: method, _details: details }); setBusy(false); if (error) { toast.error(error.message); return; } toast.success('Payment request sent'); setAmount(''); setDetails(''); refresh(); }
-  const statusOf = (id: string) => data.submissions.find(s => s.offer_id === id)?.status;
+  const statusOf = (id: string) => {
+    const submissions = data.submissions.filter(s => s.offer_id === id);
+    return submissions.find(s => s.status === 'approved')?.status ?? submissions.find(s => s.status === 'pending')?.status ?? submissions[0]?.status;
+  };
   const offers = data.offers.filter(o => view === 'all' || o.category === view);
   const pending = data.submissions.filter(s => s.status === 'pending').reduce((a, s) => a + Number(s.reward), 0);
   const nav = [{ k: 'all', n: 'Overview', I: LayoutGrid }, ...(['game', 'video', 'task'] as Cat[]).map(k => ({ k, n: labels[k], I: icons[k] })), { k: 'wallet', n: 'My wallet', I: Wallet }, { k: 'activity', n: 'Activity', I: History }] as const;

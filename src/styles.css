@@ -244,9 +244,8 @@
 .social-links a { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--border); color: var(--foreground); background: var(--card); }
 .social-links a:hover { background: var(--secondary); }
 .social-links svg { width: 16px; height: 16px; }
-.support-fab { position: fixed; right: 18px; bottom: 84px; z-index: 40; width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; background: var(--primary); color: var(--primary-foreground); box-shadow: var(--panel-shadow); }
-.support-fab svg { width: 24px; height: 24px; }
-@media (min-width: 900px) { .support-fab { bottom: 24px; } }
+.dashboard-footer-social { display: none; }
+@media (max-width: 700px) { .dashboard-footer { flex-wrap: wrap; gap: 12px; } .dashboard-footer-social { display: block; } }
 .offer-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .offer-link { display: inline-flex; gap: 4px; align-items: center; font-size: 13px; text-decoration: underline; margin-bottom: 10px; }
 .offer-link svg { width: 14px; height: 14px; }
