@@ -1,5 +1,13 @@
 {
   "version": "7",
   "dialect": "postgresql",
-  "entries": []
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1791852287619,
+      "tag": "0000_earnright_profiles_and_demo_activity",
+      "breakpoints": true
+    }
+  ]
 }

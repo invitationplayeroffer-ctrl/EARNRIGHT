@@ -14,13 +14,98 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      demo_activity: {
+        Row: {
+          activity_key: string
+          completed_at: string
+          credits: number
+          id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          activity_key: string
+          completed_at?: string
+          credits: number
+          id?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          activity_key?: string
+          completed_at?: string
+          credits?: number
+          id?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "demo_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      demo_sessions: {
+        Row: {
+          activity_key: string
+          id: string
+          started_at: string
+          user_id: string
+        }
+        Insert: {
+          activity_key: string
+          id?: string
+          started_at?: string
+          user_id: string
+        }
+        Update: {
+          activity_key?: string
+          id?: string
+          started_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "demo_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string
+          id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      complete_demo_activity: {
+        Args: { activity: string; answer: string }
+        Returns: undefined
+      }
+      start_demo_activity: { Args: { activity: string }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
