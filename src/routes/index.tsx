@@ -5,6 +5,7 @@ import { SiteHeader } from '@/components/site-header';
 import { Brand } from '@/components/brand';
 import { pageMeta } from '@/lib/meta';
 import wallpaper from '@/assets/earnright-drift.jpg';
+import blinkWallpaper from '@/assets/earnright-drift-blink.jpg';
 import { SocialLinks } from '@/components/social-links';
 export const Route = createFileRoute('/')({ head: () => pageMeta('EarnRight — Make time rewarding', 'Play games, watch videos and complete micro tasks. Discover a more rewarding way to spend your spare time.'), component: Welcome });
 const ways = [
@@ -17,6 +18,7 @@ function Welcome() {
     <main>
       <section className="welcome-hero">
         <img src={wallpaper} width={1920} height={1024} alt="3D cartoon red supercar drifting with tyre smoke on a matte grey track" className="hero-wallpaper" />
+        <img src={blinkWallpaper} width={1920} height={1024} alt="" aria-hidden="true" className="hero-wallpaper hero-blink" />
         <div className="hero-shade" />
         <div className="hero-content"><span className="eyebrow hero-eyebrow"><span className="status-dot" /> YOUR TIME. BETTER SPENT.</span><h1>EarnRight<span>.</span></h1><h2>A little spare time.<br />A lot more possibility.</h2><p>Play, watch, and get things done.<br />Make your everyday moments more rewarding.</p><Button variant="hero" asChild><Link to="/auth" search={{ mode: 'signup' }}>Start earning <ArrowUpRight /></Link></Button><div className="hero-checks"><span><Check /> Free to join</span><span><Check /> Real rewards, paid by request</span></div></div>
         <div className="wallpaper-label"><span className="status-dot" /> A NEW WAY TO SPEND YOUR DOWNTIME <span>01 / 03</span></div>
