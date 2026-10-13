@@ -1,0 +1,1 @@
+CREATE POLICY "Members read offer images" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'offer-images');

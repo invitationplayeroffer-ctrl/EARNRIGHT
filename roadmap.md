@@ -1,6 +1,5 @@
 # EarnRight
-- [x] Create matte-grey welcome page and animated wallpaper.
-- [x] Implement email signup/sign-in, profiles, sign-out and password recovery.
-- [x] Build dashboard with games, video and micro-task sample activities and saved demo credits.
-- [x] Verify signup, saved micro-task credits, sign-out and layouts on desktop and mobile.
-- [ ] Connect real paid offer providers and payouts — blocked: provider/business details not supplied.
+- [x] Welcome page, auth, password recovery.
+- [x] Drifting cartoon car hero, terms page, WhatsApp support, X and Instagram links.
+- [x] Real offers uploaded by admin, submissions accept/reject, payment requests accept/reject.
+- [x] Admin panel (mobile-friendly): user activity, reset password, ban/unban. Admin = norbidurac2910@gmail.com.

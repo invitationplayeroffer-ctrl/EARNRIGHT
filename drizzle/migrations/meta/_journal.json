@@ -8,6 +8,20 @@
       "when": 1791852287619,
       "tag": "0000_earnright_profiles_and_demo_activity",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791857806879,
+      "tag": "0001_admin_offers_payments",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791857895686,
+      "tag": "0002_offer_images_read",
+      "breakpoints": true
     }
   ]
 }

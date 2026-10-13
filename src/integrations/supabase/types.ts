@@ -78,23 +78,175 @@ export type Database = {
           },
         ]
       }
+      offers: {
+        Row: {
+          active: boolean
+          category: string
+          created_at: string
+          description: string
+          id: string
+          image_url: string
+          link: string
+          reward: number
+          title: string
+        }
+        Insert: {
+          active?: boolean
+          category: string
+          created_at?: string
+          description?: string
+          id?: string
+          image_url?: string
+          link?: string
+          reward: number
+          title: string
+        }
+        Update: {
+          active?: boolean
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          image_url?: string
+          link?: string
+          reward?: number
+          title?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
+          banned: boolean
           created_at: string
           display_name: string
+          email: string
           id: string
         }
         Insert: {
+          banned?: boolean
           created_at?: string
           display_name?: string
+          email?: string
           id: string
         }
         Update: {
+          banned?: boolean
           created_at?: string
           display_name?: string
+          email?: string
           id?: string
         }
         Relationships: []
+      }
+      submissions: {
+        Row: {
+          created_at: string
+          id: string
+          offer_id: string
+          offer_title: string
+          proof: string
+          reviewed_at: string | null
+          reward: number
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          offer_id: string
+          offer_title: string
+          proof?: string
+          reviewed_at?: string | null
+          reward: number
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          offer_id?: string
+          offer_title?: string
+          proof?: string
+          reviewed_at?: string | null
+          reward?: number
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submissions_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "offers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "submissions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      withdrawals: {
+        Row: {
+          amount: number
+          created_at: string
+          details: string
+          id: string
+          method: string
+          reviewed_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          details: string
+          id?: string
+          method: string
+          reviewed_at?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          details?: string
+          id?: string
+          method?: string
+          reviewed_at?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "withdrawals_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -105,10 +257,34 @@ export type Database = {
         Args: { activity: string; answer: string }
         Returns: undefined
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      request_withdrawal: {
+        Args: { _amount: number; _details: string; _method: string }
+        Returns: undefined
+      }
+      review_submission: {
+        Args: { _approve: boolean; _id: string }
+        Returns: undefined
+      }
+      review_withdrawal: {
+        Args: { _approve: boolean; _id: string }
+        Returns: undefined
+      }
       start_demo_activity: { Args: { activity: string }; Returns: undefined }
+      submit_offer: {
+        Args: { _offer: string; _proof: string }
+        Returns: undefined
+      }
+      user_balance: { Args: { _user: string }; Returns: number }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -235,6 +411,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
