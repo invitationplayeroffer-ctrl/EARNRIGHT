@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Brand } from '@/components/brand';
 import { pageMeta } from '@/lib/meta';
 import wallpaper from '@/assets/earnright-wallpaper.jpg';
-export const Route = createFileRoute('/auth')({ validateSearch: (search: Record<string, unknown>) => ({ mode: search.mode === 'signup' ? 'signup' : 'login' }), head: () => pageMeta('Your account', 'Sign in or create your EarnRight account with email and password. No email verification required.'), component: AuthPage });
+import { z } from 'zod';
+export const Route = createFileRoute('/auth')({ validateSearch: z.object({ mode: z.enum(['signup', 'login']).optional().catch(undefined) }), head: () => pageMeta('Your account', 'Sign in or create your EarnRight account with email and password. No email verification required.'), component: AuthPage });
 function AuthPage() {
   const { mode } = Route.useSearch();
   const signup = mode === 'signup';
