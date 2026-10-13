@@ -39,7 +39,7 @@ function Admin() {
     </main></div>;
 }
 
-function Offers({ offers, refresh }: { offers: ReturnType<typeof adminOptions> extends { queryFn?: any } ? any[] : never; refresh: () => void }) {
+function Offers({ offers, refresh }: { offers: any[]; refresh: () => void }) {
   const [f, setF] = useState({ title: '', description: '', category: 'game', reward: '', link: '' }); const [file, setFile] = useState<File | null>(null); const [busy, setBusy] = useState(false);
   async function create(e: FormEvent) {
     e.preventDefault(); setBusy(true);
