@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
-import { useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { ArrowUpRight, LayoutGrid, Gamepad2, Play, ListChecks, Wallet, History, LogOut, ShieldCheck, X } from 'lucide-react';
 import { toast } from 'sonner';
@@ -20,11 +20,35 @@ type Cat = keyof typeof icons;
 function Dashboard() {
   const { data } = useSuspenseQuery(dashboardOptions()); const qc = useQueryClient(); const navigate = useNavigate();
   const [view, setView] = useState<'all' | Cat | 'wallet' | 'activity'>('all');
-  const [active, setActive] = useState<string | null>(null); const [proof, setProof] = useState('');
+  const [active, setActive] = useState<string | null>(null); const [proof, setProof] = useState(''); const [shot, setShot] = useState<File | null>(null); const watching = useRef<string | null>(null);
   const [amount, setAmount] = useState(''); const [method, setMethod] = useState('PayPal'); const [details, setDetails] = useState(''); const [busy, setBusy] = useState(false);
   const refresh = () => qc.invalidateQueries({ queryKey: ['dashboard'] });
   async function logout() { await qc.cancelQueries(); qc.clear(); await supabase.auth.signOut(); await navigate({ to: '/auth', search: { mode: 'login' }, replace: true }); }
-  async function submit(e: FormEvent) { e.preventDefault(); if (!active) return; setBusy(true); const { error } = await supabase.rpc('submit_offer', { _offer: active, _proof: proof }); setBusy(false); if (error) { toast.error(error.message); return; } toast.success('Submitted for review'); setActive(null); setProof(''); refresh(); }
+  async function submit(e: FormEvent) {
+    e.preventDefault(); if (!active) return; setBusy(true);
+    try {
+      let path = '';
+      if (shot) { const { data: u } = await supabase.auth.getUser(); path = `${u.user!.id}/${crypto.randomUUID()}-${shot.name.replace(/[^\w.]/g, '')}`; const up = await supabase.storage.from('proof-screenshots').upload(path, shot); if (up.error) throw up.error; }
+      const { error } = await supabase.rpc('submit_proof', { _offer: active, _answer: proof, _screenshot: path }); if (error) throw error;
+      toast.success('Submitted for review'); setActive(null); setProof(''); setShot(null); refresh();
+    } catch (err) { toast.error(err instanceof Error ? err.message : 'Failed'); } finally { setBusy(false); }
+  }
+  async function watch(o: { id: string; link: string }) {
+    const win = o.link ? window.open(o.link, '_blank', 'noopener') : null;
+    const { error } = await supabase.rpc('start_video', { _offer: o.id }); if (error) { toast.error(error.message); win?.close(); return; }
+    watching.current = o.id; toast('Watch the video, then come back here to collect your reward.');
+  }
+  useEffect(() => {
+    async function back() {
+      if (document.visibilityState !== 'visible' || !watching.current) return;
+      const id = watching.current;
+      const { data: r, error } = await supabase.rpc('claim_video', { _offer: id });
+      if (error) { toast.error(error.message.includes('Watch for') ? `${error.message} — open it again to keep watching.` : error.message); if (!error.message.includes('Watch for')) watching.current = null; return; }
+      watching.current = null; toast.success(`+${money(Number(r))} added to your balance`); refresh();
+    }
+    document.addEventListener('visibilitychange', back); window.addEventListener('focus', back);
+    return () => { document.removeEventListener('visibilitychange', back); window.removeEventListener('focus', back); };
+  }, []);
   async function withdraw(e: FormEvent) { e.preventDefault(); setBusy(true); const { error } = await supabase.rpc('request_withdrawal', { _amount: Number(amount), _method: method, _details: details }); setBusy(false); if (error) { toast.error(error.message); return; } toast.success('Payment request sent'); setAmount(''); setDetails(''); refresh(); }
   const statusOf = (id: string) => {
     const submissions = data.submissions.filter(s => s.offer_id === id);
@@ -44,11 +68,11 @@ function Dashboard() {
         <div className="stat-grid"><div className="balance-stat"><span><Wallet /> Available balance</span><strong>{money(data.balance)}</strong><span>Ready to withdraw</span></div><div className="plain-stat"><span>Pending review</span><strong>{money(pending)}</strong><span>Awaiting approval</span></div><div className="plain-stat"><span>Offers available</span><strong>{data.offers.length}</strong><span>Find your next win.</span></div></div>
         {view === 'wallet' ? <section className="wallet-section"><h2>Your wallet.</h2><form className="admin-form" onSubmit={withdraw}><label>Amount (£)<input required type="number" min="1" step="0.01" max={data.balance} value={amount} onChange={e => setAmount(e.target.value)} /></label><label>Method<select value={method} onChange={e => setMethod(e.target.value)}><option>PayPal</option><option>Bank transfer</option><option>Gift card</option></select></label><label>Payment details<input required maxLength={300} value={details} onChange={e => setDetails(e.target.value)} placeholder="PayPal email or account details" /></label><Button variant="ink" disabled={busy || data.balance < 1}>Request payment <ArrowUpRight /></Button></form><RowList rows={data.withdrawals.map(w => ({ id: w.id, title: `${w.method} withdrawal`, sub: new Date(w.created_at).toLocaleDateString(), right: `-${money(w.amount)}`, status: w.status }))} empty="No payment requests yet." /></section>
         : view === 'activity' ? <section><h2>Your activity.</h2><RowList rows={data.submissions.map(s => ({ id: s.id, title: s.offer_title, sub: new Date(s.created_at).toLocaleDateString(), right: `+${money(s.reward)}`, status: s.status }))} empty="Complete your first offer to see it here." /></section>
-        : <><div className="dashboard-section-heading"><h2>Your next little win.</h2><span>{offers.length} offers</span></div>{offers.length ? <div className="dashboard-offers">{offers.map(o => { const repeatable = o.category === 'task' || o.category === 'video'; const st = repeatable ? undefined : statusOf(o.id); const I = icons[o.category as Cat] ?? ListChecks; return <article className="offer-card" key={o.id}><div className={`way-art ${o.category}-art`}>{o.src ? <img src={o.src} alt={o.title} className="offer-img" loading="lazy" /> : <div className="art-object"><span><I /></span></div>}<span className="offer-credit">+{money(o.reward)}</span></div><div className="offer-body"><span className="offer-category"><I /> {labels[o.category as Cat]}</span><h3>{o.title}</h3><p>{o.description}</p>{o.link && <a className="offer-link" href={o.link} target="_blank" rel="noopener noreferrer">Open offer <ArrowUpRight /></a>}<Button variant={st && st !== 'rejected' ? 'outline' : 'ink'} className="offer-start" disabled={!!st && st !== 'rejected'} onClick={() => setActive(o.id)}>{st === 'pending' ? 'Pending review' : st === 'approved' ? 'Approved' : st === 'rejected' ? 'Rejected – resubmit' : 'I’ve completed it'}</Button></div></article>; })}</div> : <div className="history-empty"><History /><div><strong>No offers yet.</strong><p>New offers will appear here soon.</p></div></div>}</>}
+        : <><div className="dashboard-section-heading"><h2>Your next little win.</h2><span>{offers.length} offers</span></div>{offers.length ? <div className="dashboard-offers">{offers.map(o => { const repeatable = o.category === 'video'; const st = repeatable ? undefined : statusOf(o.id); const I = icons[o.category as Cat] ?? ListChecks; return <article className="offer-card" key={o.id}><div className={`way-art ${o.category}-art`}>{o.src ? <img src={o.src} alt={o.title} className="offer-img" loading="lazy" /> : <div className="art-object"><span><I /></span></div>}<span className="offer-credit">+{money(o.reward)}</span></div><div className="offer-body"><span className="offer-category"><I /> {labels[o.category as Cat]}</span><h3>{o.title}</h3><p>{o.description}</p>{repeatable ? <Button variant="ink" className="offer-start" disabled={data.profile.banned} onClick={() => watch(o)}><Play /> Watch & earn</Button> : <>{o.link && <a className="offer-link" href={o.link} target="_blank" rel="noopener noreferrer">Open offer <ArrowUpRight /></a>}<Button variant={st && st !== 'rejected' ? 'outline' : 'ink'} className="offer-start" disabled={!!st && st !== 'rejected'} onClick={() => setActive(o.id)}>{st === 'pending' ? 'Pending review' : st === 'approved' ? 'Completed' : st === 'rejected' ? 'Rejected – resubmit' : 'Submit proof'}</Button></>}</div></article>; })}</div> : <div className="history-empty"><History /><div><strong>No offers yet.</strong><p>New offers will appear here soon.</p></div></div>}</>}
         <footer className="dashboard-footer"><div className="dashboard-footer-social"><SocialLinks /></div><span>Small moments. More possibility.</span><Link to="/terms">Terms & conditions</Link></footer>
       </main></div>
     <nav className="mobile-dashboard-nav">{nav.map(({ k, n, I }) => <Button key={k} variant={view === k ? 'secondary' : 'ghost'} aria-label={n} size="icon" onClick={() => setView(k)}><I /></Button>)}{data.isAdmin && <Button asChild variant="ghost" size="icon" aria-label="Admin panel"><Link to="/admin"><ShieldCheck /></Link></Button>}</nav>
-    {activeOffer && <div className="modal-backdrop" onClick={() => setActive(null)}><form className="modal-card" onClick={e => e.stopPropagation()} onSubmit={submit}><h3>{activeOffer.title}</h3><p>Tell us how you completed it (username, screenshot link, code…). An admin will review it.</p><textarea required maxLength={500} value={proof} onChange={e => setProof(e.target.value)} /><div className="modal-actions"><Button type="button" variant="ghost" onClick={() => setActive(null)}>Cancel</Button><Button variant="ink" disabled={busy}>Submit</Button></div></form></div>}
+    {activeOffer && <div className="modal-backdrop" onClick={() => setActive(null)}><form className="modal-card" onClick={e => e.stopPropagation()} onSubmit={submit}><h3>{activeOffer.title}</h3><p>{activeOffer.proof_question || 'Tell us how you completed it (username, code…). An admin will review it.'}</p><textarea required={!activeOffer.require_screenshot || !!activeOffer.proof_question} maxLength={500} value={proof} onChange={e => setProof(e.target.value)} placeholder="Your answer" /><label className="proof-file">Screenshot{activeOffer.require_screenshot ? ' (required)' : ' (optional)'}<input type="file" accept="image/*" required={activeOffer.require_screenshot} onChange={e => setShot(e.target.files?.[0] ?? null)} /></label><div className="modal-actions"><Button type="button" variant="ghost" onClick={() => setActive(null)}>Cancel</Button><Button variant="ink" disabled={busy}>Submit</Button></div></form></div>}
   </div>;
 }
 
