@@ -29,6 +29,13 @@
       "when": 1791858482838,
       "tag": "0003_repeat_video_and_task_offers",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791936857608,
+      "tag": "0004_proof_questions_and_video_autocredit",
+      "breakpoints": true
     }
   ]
 }

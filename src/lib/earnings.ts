@@ -37,6 +37,9 @@ export const adminOptions = () => queryOptions({
       supabase.from('profiles').select('*').order('created_at', { ascending: false }),
     ]);
     for (const r of [offers, subs, wd, users]) if (r.error) throw new Error(r.error.message);
-    return { offers: await withImages(offers.data ?? []), submissions: subs.data ?? [], withdrawals: wd.data ?? [], users: users.data ?? [] };
+    const sp = (subs.data ?? []).map(s => s.screenshot_path).filter(Boolean);
+    const signed = sp.length ? (await supabase.storage.from('proof-screenshots').createSignedUrls(sp, 3600)).data ?? [] : [];
+    const sm = new Map(signed.map(d => [d.path, d.signedUrl]));
+    return { offers: await withImages(offers.data ?? []), submissions: (subs.data ?? []).map(s => ({ ...s, shot: sm.get(s.screenshot_path) ?? '' })), withdrawals: wd.data ?? [], users: users.data ?? [] };
   },
 });

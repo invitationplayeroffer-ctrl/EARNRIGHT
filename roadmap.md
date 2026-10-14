@@ -1,3 +1,4 @@
-- [ ] Apply and verify unlimited video submissions and one-time other offers.
-- [ ] Keep support beside social icons on desktop and mobile.
-- [ ] Remove the separate green support icon and make the welcome car eyes blink.
+- [x] One-time game/task offers with proof question and screenshot
+- [x] Unlimited videos auto-credited on return
+- [x] Welcome posters for game/video/task
+- [ ] End-to-end test of admin flows with real accounts

@@ -87,8 +87,11 @@ export type Database = {
           id: string
           image_url: string
           link: string
+          proof_question: string
+          require_screenshot: boolean
           reward: number
           title: string
+          watch_seconds: number
         }
         Insert: {
           active?: boolean
@@ -98,8 +101,11 @@ export type Database = {
           id?: string
           image_url?: string
           link?: string
+          proof_question?: string
+          require_screenshot?: boolean
           reward: number
           title: string
+          watch_seconds?: number
         }
         Update: {
           active?: boolean
@@ -109,8 +115,11 @@ export type Database = {
           id?: string
           image_url?: string
           link?: string
+          proof_question?: string
+          require_screenshot?: boolean
           reward?: number
           title?: string
+          watch_seconds?: number
         }
         Relationships: []
       }
@@ -147,6 +156,7 @@ export type Database = {
           proof: string
           reviewed_at: string | null
           reward: number
+          screenshot_path: string
           status: string
           user_id: string
         }
@@ -158,6 +168,7 @@ export type Database = {
           proof?: string
           reviewed_at?: string | null
           reward: number
+          screenshot_path?: string
           status?: string
           user_id: string
         }
@@ -169,6 +180,7 @@ export type Database = {
           proof?: string
           reviewed_at?: string | null
           reward?: number
+          screenshot_path?: string
           status?: string
           user_id?: string
         }
@@ -206,6 +218,38 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      video_views: {
+        Row: {
+          claimed: boolean
+          id: string
+          offer_id: string
+          started_at: string
+          user_id: string
+        }
+        Insert: {
+          claimed?: boolean
+          id?: string
+          offer_id: string
+          started_at?: string
+          user_id: string
+        }
+        Update: {
+          claimed?: boolean
+          id?: string
+          offer_id?: string
+          started_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_views_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "offers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       withdrawals: {
         Row: {
@@ -253,6 +297,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_video: { Args: { _offer: string }; Returns: number }
       complete_demo_activity: {
         Args: { activity: string; answer: string }
         Returns: undefined
@@ -277,8 +322,13 @@ export type Database = {
         Returns: undefined
       }
       start_demo_activity: { Args: { activity: string }; Returns: undefined }
+      start_video: { Args: { _offer: string }; Returns: undefined }
       submit_offer: {
         Args: { _offer: string; _proof: string }
+        Returns: undefined
+      }
+      submit_proof: {
+        Args: { _answer: string; _offer: string; _screenshot: string }
         Returns: undefined
       }
       user_balance: { Args: { _user: string }; Returns: number }
