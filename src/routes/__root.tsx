@@ -1,3 +1,4 @@
+import { CookieBanner } from '@/components/cookie-banner';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
@@ -137,7 +138,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <AuthContext.Provider value={{ user, loading }}><Outlet /><Toaster /></AuthContext.Provider>
+      <AuthContext.Provider value={{ user, loading }}><Outlet /><CookieBanner /><Toaster /></AuthContext.Provider>
     </QueryClientProvider>
   );
 }

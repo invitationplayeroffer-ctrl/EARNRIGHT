@@ -17,11 +17,11 @@
   --radius-sm: 4px; --radius-md: 6px; --radius-lg: 8px; --radius-xl: 8px;
 }
 :root {
-  --background: oklch(0.971 0.002 120); --foreground: oklch(0.255 0.008 145);
-  --card: oklch(0.995 0.001 120); --primary: oklch(0.87 0.155 121); --primary-foreground: oklch(0.24 0.025 140);
-  --secondary: oklch(0.92 0.006 120); --muted: oklch(0.947 0.004 120); --muted-foreground: oklch(0.53 0.008 145);
-  --border: oklch(0.88 0.005 130); --destructive: oklch(0.52 0.18 25);
-  --hero-text: oklch(0.985 0.002 120); --hero-muted: oklch(0.8 0.002 120); --hero-bg: oklch(0.27 0.004 120);
+  --background: oklch(0.935 0.004 250); --foreground: oklch(0.24 0.008 250);
+  --card: oklch(0.975 0.003 250); --primary: oklch(0.80 0.012 250); --primary-foreground: oklch(0.2 0.01 250);
+  --secondary: oklch(0.89 0.006 250); --muted: oklch(0.91 0.005 250); --muted-foreground: oklch(0.5 0.01 250);
+  --border: oklch(0.84 0.006 250); --destructive: oklch(0.52 0.18 25);
+  --hero-text: oklch(0.985 0.002 250); --hero-muted: oklch(0.82 0.004 250); --hero-bg: oklch(0.27 0.006 250);
   --hero-overlay: oklch(0.19 0.004 120 / 46%); --glass: oklch(0.65 0.002 120 / 18%); --glass-border: oklch(0.9 0 0 / 24%);
   --game-surface: oklch(0.88 0.042 120); --game-object: oklch(0.38 0.032 130); --video-surface: oklch(0.86 0.036 225); --video-object: oklch(0.54 0.068 220); --task-surface: oklch(0.88 0.032 52); --task-object: oklch(0.68 0.08 55);
   --object-shadow: 0 18px 22px oklch(0.2 0.01 130 / 17%); --panel-shadow: 0 20px 60px oklch(0.15 0 0 / 18%);
