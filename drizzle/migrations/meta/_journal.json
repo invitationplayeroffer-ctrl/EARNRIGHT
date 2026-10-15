@@ -36,6 +36,13 @@
       "when": 1791936857608,
       "tag": "0004_proof_questions_and_video_autocredit",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792022503801,
+      "tag": "0005_profile_date_of_birth",
+      "breakpoints": true
     }
   ]
 }

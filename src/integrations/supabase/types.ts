@@ -127,6 +127,7 @@ export type Database = {
         Row: {
           banned: boolean
           created_at: string
+          date_of_birth: string | null
           display_name: string
           email: string
           id: string
@@ -134,6 +135,7 @@ export type Database = {
         Insert: {
           banned?: boolean
           created_at?: string
+          date_of_birth?: string | null
           display_name?: string
           email?: string
           id: string
@@ -141,6 +143,7 @@ export type Database = {
         Update: {
           banned?: boolean
           created_at?: string
+          date_of_birth?: string | null
           display_name?: string
           email?: string
           id?: string
