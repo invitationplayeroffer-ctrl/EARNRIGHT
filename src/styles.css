@@ -291,3 +291,10 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--border); backg
 .ways-grid .way-art { height: 300px; }
 .proof-file { display: grid; gap: 6px; font-size: 13px; }
 .admin-shot { max-width: 220px; border-radius: 10px; margin-top: 8px; display: block; }
+.cookie-overlay { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 20px; background: oklch(0.15 0.005 250 / 45%); backdrop-filter: blur(3px); }
+.cookie-bar { width: 100%; max-width: 380px; text-align: center; background: var(--card); color: var(--foreground); border: 1px solid var(--border); border-radius: 14px; padding: 26px 22px; box-shadow: var(--panel-shadow); font-size: 13px; line-height: 1.6; }
+.cookie-bar .cookie-icon { width: 44px; height: 44px; margin: 0 auto 10px; }
+.cookie-bar h2 { font-size: 18px; margin: 0 0 6px; }
+.cookie-bar p { margin: 0 0 16px; color: var(--muted-foreground); }
+.cookie-bar a { text-decoration: underline; }
+.cookie-actions { display: flex; gap: 8px; justify-content: center; }
