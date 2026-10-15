@@ -298,3 +298,18 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--border); backg
 .cookie-bar p { margin: 0 0 16px; color: var(--muted-foreground); }
 .cookie-bar a { text-decoration: underline; }
 .cookie-actions { display: flex; gap: 8px; justify-content: center; }
+@keyframes rise-in { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+@keyframes car-rumble { 0%,100% { transform: scale(1.04) translate(0,0) rotate(0); } 25% { transform: scale(1.045) translate(-.4%,.15%) rotate(-.15deg); } 50% { transform: scale(1.05) translate(-.8%,0) rotate(0); } 75% { transform: scale(1.045) translate(-.4%,-.15%) rotate(.15deg); } }
+@keyframes soft-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@media (prefers-reduced-motion: no-preference) {
+  .hero-wallpaper { animation: car-rumble 9s ease-in-out infinite; }
+  .hero-blink { animation: car-rumble 9s ease-in-out infinite, car-blink 6s linear infinite; }
+  .hero-content > * { animation: rise-in .8s cubic-bezier(.2,.7,.2,1) both; }
+  .hero-content > *:nth-child(2) { animation-delay: .1s; } .hero-content > *:nth-child(3) { animation-delay: .2s; } .hero-content > *:nth-child(4) { animation-delay: .3s; } .hero-content > *:nth-child(5) { animation-delay: .4s; } .hero-content > *:nth-child(6) { animation-delay: .5s; }
+  .trust-strip span, .section-heading, .way-card, .how-section > *, .how-section li, .offer-card, .stat-grid > div, .admin-card, .auth-panel { animation: rise-in .8s cubic-bezier(.2,.7,.2,1) both; animation-timeline: view(); animation-range: entry 0% entry 60%; }
+  .way-art img { transition: transform .6s cubic-bezier(.2,.7,.2,1); }
+  .way-card:hover .way-art img { transform: scale(1.06) rotate(-1deg); }
+  .art-arrow, .status-dot { animation: soft-float 3s ease-in-out infinite; }
+  .cookie-bar { animation: rise-in .5s cubic-bezier(.2,.7,.2,1) both; }
+}
+@supports not (animation-timeline: view()) { .trust-strip span, .section-heading, .way-card, .how-section > *, .how-section li, .offer-card, .stat-grid > div, .admin-card, .auth-panel { animation-timeline: auto; } }
