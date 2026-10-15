@@ -240,11 +240,11 @@
 }
 @media (prefers-reduced-motion: reduce) { *,*::before,*::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
 /* social + support */
-.hero-blink { opacity: 0; pointer-events: none; animation: wallpaper-drift 24s ease-in-out infinite alternate, car-blink 5.4s ease-in-out infinite; }
+.hero-blink { opacity: 0; pointer-events: none; animation: wallpaper-drift 24s ease-in-out infinite alternate, car-blink 6s linear infinite; }
 .hero-blink { -webkit-mask-image: radial-gradient(ellipse 15% 11% at 65% 45%, #000 60%, transparent 100%); mask-image: radial-gradient(ellipse 15% 11% at 65% 45%, #000 60%, transparent 100%); }
-@keyframes car-blink { 0%, 66%, 76%, 100% { opacity: 0; animation-timing-function: ease-in-out; } 70%, 72% { opacity: 1; animation-timing-function: ease-in-out; } }
+@keyframes car-blink { 0%, 80%, 83.4%, 100% { opacity: 0; } 81%, 82.2% { opacity: 1; } }
 @media (max-width: 700px) { .hero-blink { animation-name: wallpaper-drift, car-blink-mobile; } }
-@keyframes car-blink-mobile { 0%, 66%, 76%, 100% { opacity: 0; } 70%, 72% { opacity: 1; } }
+@keyframes car-blink-mobile { 0%, 80%, 83.4%, 100% { opacity: 0; } 81%, 82.2% { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .hero-blink { display: none; } }
 .social-links { display: flex; gap: 8px; align-items: center; }
 .social-links a { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--border); color: var(--foreground); background: var(--card); }
