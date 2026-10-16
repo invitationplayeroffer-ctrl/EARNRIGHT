@@ -36,7 +36,7 @@ export function StackGame({ onReward }: { onReward: () => void }) {
 
   function drop() {
     const s = st.current; if (s.over || s.paused) return;
-    const top = s.stack[s.stack.length - 1];
+    const top = s.stack[s.stack.length - 1]!;
     const l = Math.max(top.x, s.cur.x), r = Math.min(top.x + top.w, s.cur.x + s.cur.w);
     if (r - l <= 0) { s.over = true; setOver(true); return; }
     s.stack.push({ x: l, w: r - l }); s.cur = { x: 0, w: r - l }; s.speed = Math.min(6, s.speed + 0.2);
