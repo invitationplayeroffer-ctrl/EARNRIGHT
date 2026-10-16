@@ -3,12 +3,14 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { money } from '@/lib/links';
+import poster from '@/assets/poster-stack.jpg';
+import { X } from 'lucide-react';
 
 const AD_URL = 'https://www.profitableratecpmnetwork.com/vwikgawy61?key=2733a9f76350db8589179208af49683e';
 const W = 300, H = 420, BH = 22, BLOCKS_PER_LEVEL = 5;
 type Block = { x: number; w: number };
 
-export function StackGame({ onReward }: { onReward: () => void }) {
+function Game({ onReward }: { onReward: () => void }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const st = useRef({ stack: [{ x: 75, w: 150 }] as Block[], cur: { x: 0, w: 150 } as Block, dir: 1, speed: 2, over: false, paused: false });
   const [placed, setPlaced] = useState(0); const [over, setOver] = useState(false);
@@ -23,11 +25,14 @@ export function StackGame({ onReward }: { onReward: () => void }) {
       const s = st.current, c = canvas.current?.getContext('2d');
       if (!s.over && !s.paused) { s.cur.x += s.dir * s.speed; if (s.cur.x < 0 || s.cur.x + s.cur.w > W) s.dir *= -1; }
       if (c) {
-        const css = getComputedStyle(document.documentElement);
-        c.fillStyle = css.getPropertyValue('--muted') || '#ddd'; c.fillRect(0, 0, W, H);
-        const off = Math.max(0, s.stack.length - 14) * BH;
-        s.stack.forEach((b, i) => { c.fillStyle = `hsl(220 6% ${30 + (i % 6) * 8}%)`; c.fillRect(b.x, H - (i + 1) * BH + off, b.w, BH - 2); });
-        if (!s.over) { c.fillStyle = 'hsl(220 8% 22%)'; c.fillRect(s.cur.x, H - (s.stack.length + 1) * BH + off, s.cur.w, BH - 2); }
+        const dpr = window.devicePixelRatio || 1; const cv = c.canvas;
+        if (cv.width !== W * dpr) { cv.width = W * dpr; cv.height = H * dpr; }
+        c.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const bg = c.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#2b2e33'); bg.addColorStop(1, '#14161a'); c.fillStyle = bg; c.fillRect(0, 0, W, H);
+        const off = Math.max(0, s.stack.length - 12) * BH;
+        const block = (b: Block, y: number, i: number) => { const g = c.createLinearGradient(0, y, 0, y + BH); const l = 55 + (i % 5) * 7; g.addColorStop(0, `hsl(215 10% ${l + 18}%)`); g.addColorStop(1, `hsl(215 8% ${l - 10}%)`); c.fillStyle = g; c.beginPath(); c.roundRect(b.x, y, b.w, BH - 3, 5); c.fill(); c.fillStyle = 'rgba(255,255,255,.35)'; c.fillRect(b.x + 4, y + 2, Math.max(0, b.w - 8), 2); };
+        s.stack.forEach((b, i) => block(b, H - (i + 1) * BH + off, i));
+        if (!s.over) block(s.cur, H - (s.stack.length + 1) * BH + off, s.stack.length);
       }
       raf = requestAnimationFrame(draw);
     };
@@ -65,10 +70,18 @@ export function StackGame({ onReward }: { onReward: () => void }) {
     return () => { document.removeEventListener('visibilitychange', back); window.removeEventListener('focus', back); };
   }, [onReward]);
 
-  return <section className="stack-game"><h2>Stack & earn.</h2><p>Stack {BLOCKS_PER_LEVEL} blocks to pass a level, then claim your reward. Tap the board to drop.</p>
+  return <section className="stack-game stack-screen"><h2>Stack & earn.</h2><p>Stack {BLOCKS_PER_LEVEL} blocks to pass a level, then claim your reward. Tap the board to drop.</p>
     <div className="stack-hud"><span>Level {level}</span><span>{placed} blocks</span></div>
-    <canvas ref={canvas} width={W} height={H} className="stack-canvas" onClick={drop} onKeyDown={e => e.key === ' ' && drop()} tabIndex={0} aria-label="Stack game board" />
+    <canvas ref={canvas} className="stack-canvas" onClick={drop} onKeyDown={e => e.key === ' ' && drop()} tabIndex={0} aria-label="Stack game board" />
     {claimLevel != null && <div className="stack-overlay"><strong>Level {claimLevel} passed!</strong><Button variant="ink" onClick={claim}>Claim reward</Button><Button variant="ghost" onClick={skip}>Keep playing</Button></div>}
     {over && <div className="stack-overlay"><strong>Game over</strong><Button variant="ink" onClick={reset}>Play again</Button></div>}
   </section>;
+}
+
+export function StackGame({ onReward }: { onReward: () => void }) {
+  const [open, setOpen] = useState(false);
+  return <>
+    <button type="button" className="stack-poster" onClick={() => setOpen(true)}><img src={poster} alt="Stack game poster" width={768} height={960} loading="lazy" /><span><strong>Stack & earn</strong>Tap to play</span></button>
+    {open && <div className="stack-modal"><button type="button" className="stack-close" aria-label="Close game" onClick={() => setOpen(false)}><X /></button><Game onReward={onReward} /></div>}
+  </>;
 }

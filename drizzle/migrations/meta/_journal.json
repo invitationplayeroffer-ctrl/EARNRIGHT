@@ -50,6 +50,13 @@
       "when": 1792109281432,
       "tag": "0006_stack_game_rewards",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792109556986,
+      "tag": "0007_signup_bonus_and_20_min_cashout",
+      "breakpoints": true
     }
   ]
 }

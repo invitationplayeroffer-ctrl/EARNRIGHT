@@ -326,3 +326,14 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--border); backg
 .stack-canvas { width: min(300px, 100%); height: auto; border-radius: 14px; border: 1px solid var(--border); cursor: pointer; touch-action: manipulation; }
 .stack-overlay { position: absolute; top: 45%; left: 50%; transform: translate(-50%,-50%); background: var(--card); color: var(--card-foreground); border: 1px solid var(--border); border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 20px 50px -20px rgb(0 0 0 / .4); }
 @media (prefers-reduced-motion: reduce) { .ways-grid .way-art .offer-img { animation: none; } }
+.stack-poster { position: relative; display: block; width: min(340px, 100%); margin: 10px auto; border-radius: 20px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; padding: 0; }
+.stack-poster img { width: 100%; height: auto; display: block; transition: transform .5s; }
+.stack-poster:hover img { transform: scale(1.05); }
+.stack-poster span { position: absolute; left: 0; right: 0; bottom: 0; padding: 18px; display: flex; flex-direction: column; gap: 2px; text-align: left; color: #fff; background: linear-gradient(transparent, rgb(0 0 0 / .7)); font-size: 13px; }
+.stack-poster strong { font-size: 22px; }
+.stack-modal { position: fixed; inset: 0; z-index: 60; background: #0e0f12; color: #f2f3f5; display: flex; align-items: center; justify-content: center; padding: 16px; overflow-y: auto; }
+.stack-modal .stack-game > p { color: #b8bcc4; }
+.stack-close { position: absolute; top: 14px; right: 14px; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: rgb(255 255 255 / .1); color: #fff; }
+.stack-modal .stack-canvas { width: min(360px, 92vw, 60vh); aspect-ratio: 300 / 420; border-color: rgb(255 255 255 / .12); }
+.site-header .brand-logo, .dashboard-sidebar .brand-logo { background: #f1f2f4; padding: 4px 10px; border-radius: 10px; box-sizing: content-box; }
+.site-footer .brand-logo { background: #f1f2f4; padding: 4px 10px; border-radius: 10px; box-sizing: content-box; }

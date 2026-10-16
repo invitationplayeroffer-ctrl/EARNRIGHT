@@ -169,6 +169,7 @@ export type Database = {
           display_name: string
           email: string
           id: string
+          signup_bonus: number
         }
         Insert: {
           banned?: boolean
@@ -177,6 +178,7 @@ export type Database = {
           display_name?: string
           email?: string
           id: string
+          signup_bonus?: number
         }
         Update: {
           banned?: boolean
@@ -185,6 +187,7 @@ export type Database = {
           display_name?: string
           email?: string
           id?: string
+          signup_bonus?: number
         }
         Relationships: []
       }
