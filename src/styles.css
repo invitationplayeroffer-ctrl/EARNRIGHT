@@ -313,3 +313,16 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--border); backg
   .cookie-bar { animation: rise-in .5s cubic-bezier(.2,.7,.2,1) both; }
 }
 @supports not (animation-timeline: view()) { .trust-strip span, .section-heading, .way-card, .how-section > *, .how-section li, .offer-card, .stat-grid > div, .admin-card, .auth-panel { animation-timeline: auto; } }
+
+.brand-logo { height: 34px; width: auto; display: block; }
+@media (max-width: 700px) { .brand-logo { height: 28px; } }
+@keyframes poster-pan { 0%,100% { transform: scale(1.08) translate(0,0); } 50% { transform: scale(1.16) translate(-3%,-2%); } }
+.ways-grid .way-art .offer-img { animation: poster-pan 9s ease-in-out infinite; }
+.ways-grid .way-card:nth-child(2) .offer-img { animation-delay: -3s; animation-direction: reverse; }
+.ways-grid .way-card:nth-child(3) .offer-img { animation-delay: -6s; }
+.stack-game { position: relative; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+.stack-game > p { color: var(--muted-foreground); max-width: 360px; }
+.stack-hud { display: flex; gap: 20px; font-weight: 700; }
+.stack-canvas { width: min(300px, 100%); height: auto; border-radius: 14px; border: 1px solid var(--border); cursor: pointer; touch-action: manipulation; }
+.stack-overlay { position: absolute; top: 45%; left: 50%; transform: translate(-50%,-50%); background: var(--card); color: var(--card-foreground); border: 1px solid var(--border); border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 20px 50px -20px rgb(0 0 0 / .4); }
+@media (prefers-reduced-motion: reduce) { .ways-grid .way-art .offer-img { animation: none; } }
