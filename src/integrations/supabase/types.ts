@@ -78,6 +78,44 @@ export type Database = {
           },
         ]
       }
+      game_rewards: {
+        Row: {
+          claimed: boolean
+          day: string
+          id: string
+          level: number
+          reward: number
+          started_at: string
+          user_id: string
+        }
+        Insert: {
+          claimed?: boolean
+          day?: string
+          id?: string
+          level: number
+          reward?: number
+          started_at?: string
+          user_id: string
+        }
+        Update: {
+          claimed?: boolean
+          day?: string
+          id?: string
+          level?: number
+          reward?: number
+          started_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_rewards_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       offers: {
         Row: {
           active: boolean
@@ -300,6 +338,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_game_reward: { Args: { _level: number }; Returns: number }
       claim_video: { Args: { _offer: string }; Returns: number }
       complete_demo_activity: {
         Args: { activity: string; answer: string }
@@ -325,6 +364,7 @@ export type Database = {
         Returns: undefined
       }
       start_demo_activity: { Args: { activity: string }; Returns: undefined }
+      start_game_claim: { Args: { _level: number }; Returns: undefined }
       start_video: { Args: { _offer: string }; Returns: undefined }
       submit_offer: {
         Args: { _offer: string; _proof: string }
