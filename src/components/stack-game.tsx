@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { money } from '@/lib/links';
 import poster from '@/assets/poster-stack.jpg';
+import { STACK_WAIT_SECONDS } from '@/lib/reward-rules';
 import { X } from 'lucide-react';
 
 const AD_URL = 'https://www.profitableratecpmnetwork.com/vwikgawy61?key=2733a9f76350db8589179208af49683e';
@@ -16,6 +17,9 @@ function Game({ onReward }: { onReward: () => void }) {
   const [placed, setPlaced] = useState(0); const [over, setOver] = useState(false);
   const [claimLevel, setClaimLevel] = useState<number | null>(null); const [level, setLevel] = useState(1);
   const pending = useRef<number | null>(null);
+  const collecting = useRef(false);
+  const [claiming, setClaiming] = useState(false);
+  const [awaiting, setAwaiting] = useState(false);
 
   function reset() { st.current = { stack: [{ x: 75, w: 150 }], cur: { x: 0, w: 150 }, dir: 1, speed: 2, over: false, paused: false }; setPlaced(0); setOver(false); setClaimLevel(null); setLevel(1); }
 
@@ -41,47 +45,59 @@ function Game({ onReward }: { onReward: () => void }) {
 
   function drop() {
     const s = st.current; if (s.over || s.paused) return;
-    const top = s.stack[s.stack.length - 1]!;
+    const top = s.stack[s.stack.length - 1];
+    if (!top) return;
     const l = Math.max(top.x, s.cur.x), r = Math.min(top.x + top.w, s.cur.x + s.cur.w);
-    if (r - l <= 0) { s.over = true; setOver(true); return; }
+    if (r - l <= 0) { s.over = true; setOver(true); setClaimLevel(level); return; }
     s.stack.push({ x: l, w: r - l }); s.cur = { x: 0, w: r - l }; s.speed = Math.min(6, s.speed + 0.2);
     const n = s.stack.length - 1; setPlaced(n);
     if (n % BLOCKS_PER_LEVEL === 0) { s.paused = true; setClaimLevel(n / BLOCKS_PER_LEVEL); }
   }
 
   async function claim() {
-    if (claimLevel == null) return;
-    const win = window.open(AD_URL, '_blank', 'noopener');
-    const { error } = await supabase.rpc('start_game_claim', { _level: claimLevel });
-    if (error) { toast.error(error.message); win?.close(); return; }
-    pending.current = claimLevel; toast('Watch the ad for 3 seconds, then come back to collect.');
+    if (claimLevel == null || claiming || pending.current != null) return;
+    const win = window.open(AD_URL, '_blank');
+    if (!win) { toast.error('Allow pop-ups to open the ad.'); return; }
+    win.opener = null;
+    setClaiming(true);
+    try {
+      const { error } = await supabase.rpc('start_game_claim', { _level: claimLevel });
+      if (error) { toast.error(error.message); win.close(); return; }
+      pending.current = claimLevel; setAwaiting(true);
+      toast(`Return after at least ${STACK_WAIT_SECONDS} seconds to collect.`);
+    } finally { setClaiming(false); }
   }
   function skip() { st.current.paused = false; setLevel(l => l + 1); setClaimLevel(null); }
-
-  useEffect(() => {
-    async function back() {
-      if (document.visibilityState !== 'visible' || pending.current == null) return;
-      const lv = pending.current;
+  async function collect() {
+    if (pending.current == null || collecting.current) return;
+    collecting.current = true;
+    const lv = pending.current;
+    try {
       const { data, error } = await supabase.rpc('claim_game_reward', { _level: lv });
-      if (error) { toast.error(error.message.includes('3 seconds') ? 'Watch the ad for at least 3 seconds — press claim again.' : error.message); if (!error.message.includes('3 seconds')) pending.current = null; return; }
-      pending.current = null; toast.success(`+${money(Number(data))} for level ${lv}`); onReward(); skip();
-    }
+      if (error) { toast.error(error.message); return; }
+      pending.current = null; setAwaiting(false);
+      toast.success(`+${money(Number(data))} collected`); onReward();
+      // Failed games remain claimable; each click starts a fresh timed ad session.
+      if (!st.current.over) skip();
+    } finally { collecting.current = false; }
+  }
+  useEffect(() => {
+    const back = () => { if (document.visibilityState === 'visible') void collect(); };
     document.addEventListener('visibilitychange', back); window.addEventListener('focus', back);
     return () => { document.removeEventListener('visibilitychange', back); window.removeEventListener('focus', back); };
   }, [onReward]);
 
   return <section className="stack-game stack-screen"><h2>Stack & earn.</h2><p>Stack {BLOCKS_PER_LEVEL} blocks to pass a level, then claim your reward. Tap the board to drop.</p>
     <div className="stack-hud"><span>Level {level}</span><span>{placed} blocks</span></div>
-    <canvas ref={canvas} className="stack-canvas" onClick={drop} onKeyDown={e => e.key === ' ' && drop()} tabIndex={0} aria-label="Stack game board" />
-    {claimLevel != null && <div className="stack-overlay"><strong>Level {claimLevel} passed!</strong><Button variant="ink" onClick={claim}>Claim reward</Button><Button variant="ghost" onClick={skip}>Keep playing</Button></div>}
-    {over && <div className="stack-overlay"><strong>Game over</strong><Button variant="ink" onClick={reset}>Play again</Button></div>}
+    <canvas ref={canvas} className="stack-canvas" onClick={drop} onKeyDown={e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); drop(); } }} tabIndex={0} aria-label="Stack game board" />
+    {claimLevel != null && <div className="stack-overlay"><strong>{over ? 'Game over' : `Level ${claimLevel} passed!`}</strong><Button variant="ink" disabled={claiming} onClick={awaiting ? collect : claim}>{claiming ? 'Opening…' : awaiting ? 'Collect reward' : 'Claim $0.01'}</Button>{!awaiting && <Button variant="outline" onClick={over ? reset : skip}>{over ? 'Play again' : 'Keep playing'}</Button>}</div>}
   </section>;
 }
 
 export function StackGame({ onReward }: { onReward: () => void }) {
   const [open, setOpen] = useState(false);
   return <>
-    <button type="button" className="stack-poster" onClick={() => setOpen(true)}><img src={poster} alt="Stack game poster" width={768} height={960} loading="lazy" /><span><strong>Stack & earn</strong>Tap to play</span></button>
-    {open && <div className="stack-modal"><button type="button" className="stack-close" aria-label="Close game" onClick={() => setOpen(false)}><X /></button><Game onReward={onReward} /></div>}
+    <Button type="button" variant="ghost" aria-label="Play Stack game" className="stack-poster" onClick={() => setOpen(true)}><img src={poster} alt="Stack game poster" width={768} height={960} loading="lazy" /><span><strong>Stack & earn</strong>Tap to play</span></Button>
+    {open && <div className="stack-modal"><Button type="button" variant="ghost" size="icon" className="stack-close" aria-label="Close game" onClick={() => setOpen(false)}><X /></Button><Game onReward={onReward} /></div>}
   </>;
 }
