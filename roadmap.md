@@ -1,4 +1,8 @@
 - [x] One-time game/task offers with proof question and screenshot
 - [x] Unlimited videos auto-credited on return
 - [x] Welcome posters for game/video/task
-- [ ] End-to-end test of admin flows with real accounts
+- [ ] Repeatable Stack claims after failure
+- [ ] New welcome reward/game backgrounds without blinking
+- [ ] $5 signup bonus, $20 cashout, admin $10 awards with tests
+- [ ] Vercel hosting configuration and honest deployment verification
+- [ ] End-to-end verification of changed reward flows
