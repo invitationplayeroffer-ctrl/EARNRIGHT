@@ -240,12 +240,6 @@
 }
 @media (prefers-reduced-motion: reduce) { *,*::before,*::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
 /* social + support */
-.hero-blink { opacity: 0; pointer-events: none; animation: wallpaper-drift 24s ease-in-out infinite alternate, car-blink 6s linear infinite; }
-.hero-blink { -webkit-mask-image: radial-gradient(ellipse 15% 11% at 65% 45%, #000 60%, transparent 100%); mask-image: radial-gradient(ellipse 15% 11% at 65% 45%, #000 60%, transparent 100%); }
-@keyframes car-blink { 0%, 80%, 83.4%, 100% { opacity: 0; } 81%, 82.2% { opacity: 1; } }
-@media (max-width: 700px) { .hero-blink { animation-name: wallpaper-drift, car-blink-mobile; } }
-@keyframes car-blink-mobile { 0%, 80%, 83.4%, 100% { opacity: 0; } 81%, 82.2% { opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .hero-blink { display: none; } }
 .social-links { display: flex; gap: 8px; align-items: center; }
 .social-links a { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--border); color: var(--foreground); background: var(--card); }
 .social-links a:hover { background: var(--secondary); }
@@ -299,11 +293,10 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--border); backg
 .cookie-bar a { text-decoration: underline; }
 .cookie-actions { display: flex; gap: 8px; justify-content: center; }
 @keyframes rise-in { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
-@keyframes car-rumble { 0%,100% { transform: scale(1.04) translate(0,0) rotate(0); } 25% { transform: scale(1.045) translate(-.4%,.15%) rotate(-.15deg); } 50% { transform: scale(1.05) translate(-.8%,0) rotate(0); } 75% { transform: scale(1.045) translate(-.4%,-.15%) rotate(.15deg); } }
+@keyframes wallpaper-motion { 0%,100% { transform: scale(1.04) translate(0,0) rotate(0); } 25% { transform: scale(1.045) translate(-.4%,.15%) rotate(-.15deg); } 50% { transform: scale(1.05) translate(-.8%,0) rotate(0); } 75% { transform: scale(1.045) translate(-.4%,-.15%) rotate(.15deg); } }
 @keyframes soft-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 @media (prefers-reduced-motion: no-preference) {
-  .hero-wallpaper { animation: car-rumble 9s ease-in-out infinite; }
-  .hero-blink { animation: car-rumble 9s ease-in-out infinite, car-blink 6s linear infinite; }
+  .hero-wallpaper { animation: wallpaper-motion 9s ease-in-out infinite; }
   .hero-content > * { animation: rise-in .8s cubic-bezier(.2,.7,.2,1) both; }
   .hero-content > *:nth-child(2) { animation-delay: .1s; } .hero-content > *:nth-child(3) { animation-delay: .2s; } .hero-content > *:nth-child(4) { animation-delay: .3s; } .hero-content > *:nth-child(5) { animation-delay: .4s; } .hero-content > *:nth-child(6) { animation-delay: .5s; }
   .trust-strip span, .section-heading, .way-card, .how-section > *, .how-section li, .offer-card, .stat-grid > div, .admin-card, .auth-panel { animation: rise-in .8s cubic-bezier(.2,.7,.2,1) both; animation-timeline: view(); animation-range: entry 0% entry 60%; }
@@ -337,3 +330,10 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--border); backg
 .stack-modal .stack-canvas { width: min(360px, 92vw, 60vh); aspect-ratio: 300 / 420; border-color: rgb(255 255 255 / .12); }
 .site-header .brand-logo, .dashboard-sidebar .brand-logo { background: #f1f2f4; padding: 4px 10px; border-radius: 10px; box-sizing: content-box; }
 .site-footer .brand-logo { background: #f1f2f4; padding: 4px 10px; border-radius: 10px; box-sizing: content-box; }
+
+.hero-rewards { opacity: 0; }
+@keyframes rewards-crossfade { 0%, 40%, 100% { opacity: 0; } 50%, 90% { opacity: 1; } }
+@media (prefers-reduced-motion: no-preference) { .hero-wallpaper.hero-rewards { animation: wallpaper-motion 24s ease-in-out infinite, rewards-crossfade 20s ease-in-out infinite; } }
+.stack-overlay { width: min(280px, calc(100% - 24px)); border-radius: 8px; }
+.stack-poster { height: auto; border-radius: 8px; }
+.stack-close { background: var(--glass); color: var(--hero-text); }
