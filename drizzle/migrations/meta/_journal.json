@@ -64,6 +64,13 @@
       "when": 1792195738528,
       "tag": "0008_repeat_stack_and_admin_awards",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792195827964,
+      "tag": "0009_protect_signup_balance",
+      "breakpoints": true
     }
   ]
 }
