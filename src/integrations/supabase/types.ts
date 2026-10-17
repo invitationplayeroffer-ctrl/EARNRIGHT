@@ -191,6 +191,57 @@ export type Database = {
         }
         Relationships: []
       }
+      reward_events: {
+        Row: {
+          awarded_by: string | null
+          claimed: boolean
+          id: string
+          kind: string
+          level: number | null
+          request_id: string | null
+          reward: number
+          started_at: string
+          user_id: string
+        }
+        Insert: {
+          awarded_by?: string | null
+          claimed?: boolean
+          id?: string
+          kind: string
+          level?: number | null
+          request_id?: string | null
+          reward: number
+          started_at?: string
+          user_id: string
+        }
+        Update: {
+          awarded_by?: string | null
+          claimed?: boolean
+          id?: string
+          kind?: string
+          level?: number | null
+          request_id?: string | null
+          reward?: number
+          started_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reward_events_awarded_by_fkey"
+            columns: ["awarded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reward_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       submissions: {
         Row: {
           created_at: string
@@ -341,6 +392,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      award_user_bonus: {
+        Args: { _request: string; _user: string }
+        Returns: number
+      }
       claim_game_reward: { Args: { _level: number }; Returns: number }
       claim_video: { Args: { _offer: string }; Returns: number }
       complete_demo_activity: {

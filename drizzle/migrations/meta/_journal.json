@@ -57,6 +57,13 @@
       "when": 1792109556986,
       "tag": "0007_signup_bonus_and_20_min_cashout",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792195738528,
+      "tag": "0008_repeat_stack_and_admin_awards",
+      "breakpoints": true
     }
   ]
 }
