@@ -373,3 +373,4 @@ textarea { width: 100%; min-height: 96px; border: 1px solid var(--border); backg
 @media (prefers-reduced-motion: no-preference) { .box-3d.is-waiting .box-cube { animation: box-hint 1.4s ease-in-out infinite; } }
 @media (prefers-reduced-motion: reduce) { .box-cube { animation: none; } .box-3d.is-waiting .box-cube { animation: none; } .box-3d.is-open .box-glow { animation: none; opacity: 0.5; } .box-lid-inner { transition: none; } }
 @media (max-width: 700px) { .box-stage { grid-template-columns: 1fr; gap: 18px; padding: 22px; } .box-3d { --s: 128px; --w: 190px; } .box-question { font-size: 40px; } .box-head { flex-direction: column; } .box-head p { font-size: 12px; } }
+.stack-sound { position: absolute; top: 14px; left: 14px; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--glass); color: var(--hero-text); }
