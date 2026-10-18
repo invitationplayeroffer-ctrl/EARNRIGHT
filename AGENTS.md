@@ -20,6 +20,7 @@
 - Game/task offers are one-time with admin-set proof (question and/or screenshot in private proof-screenshots bucket, user-folder paths) via submit_proof; videos are unlimited and auto-credited by claim_video only after a server-timed start_video session (why: rewards cannot be self-granted from the client).
 
 - Welcome art uses two bundled wallpaper layers with reduced-motion-aware crossfades, so it needs no external image host.
-- Repeat Stack sessions and admin awards use reward_events with auth-checked RPCs, one pending Stack session per player, and idempotent admin request IDs to prevent duplicate credits.
+- Repeat Stack sessions, mystery box sessions and admin awards use reward_events with auth-checked RPCs, one pending session per kind per player, and idempotent admin request IDs to prevent duplicate credits.
+- Timed rewards (video watch seconds, Stack 3s, box 5s visit and 10-minute box cooldown) are measured server-side from the start RPC's timestamp; the client only opens the offer link and re-triggers the claim RPC when the tab becomes visible again (why: rewards cannot be self-granted from the client).
 - Profiles expose column-scoped updates only for personal details; bonus and ban state stay privileged to prevent balance tampering.
 - Keep Lovable hosting defaults; select the Nitro Vercel preset only in an external hosting build command to preserve managed publishing.

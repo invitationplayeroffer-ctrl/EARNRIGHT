@@ -1,12 +1,13 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
-import { ArrowUpRight, LayoutGrid, Gamepad2, Play, ListChecks, Wallet, History, LogOut, ShieldCheck, X, Layers } from 'lucide-react';
+import { ArrowUpRight, LayoutGrid, Gamepad2, Play, ListChecks, Wallet, History, LogOut, ShieldCheck, X, Layers, Gift } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Brand } from '@/components/brand';
 import { SocialLinks } from '@/components/social-links';
 import { StackGame } from '@/components/stack-game';
+import { MysteryBox } from '@/components/mystery-box';
 import { dashboardOptions } from '@/lib/earnings';
 import { money } from '@/lib/links';
 import { MIN_CASHOUT } from '@/lib/reward-rules';
@@ -21,7 +22,7 @@ type Cat = keyof typeof icons;
 
 function Dashboard() {
   const { data } = useSuspenseQuery(dashboardOptions()); const qc = useQueryClient(); const navigate = useNavigate();
-  const [view, setView] = useState<'all' | Cat | 'stack' | 'wallet' | 'activity'>('all');
+  const [view, setView] = useState<'all' | Cat | 'box' | 'stack' | 'wallet' | 'activity'>('all');
   const [active, setActive] = useState<string | null>(null); const [proof, setProof] = useState(''); const [shot, setShot] = useState<File | null>(null); const watching = useRef<string | null>(null);
   const [amount, setAmount] = useState(''); const [method, setMethod] = useState('PayPal'); const [details, setDetails] = useState(''); const [busy, setBusy] = useState(false);
   const refresh = useCallback(() => { qc.invalidateQueries({ queryKey: ['dashboard'] }); }, [qc]);
@@ -58,7 +59,7 @@ function Dashboard() {
   };
   const offers = data.offers.filter(o => view === 'all' || o.category === view);
   const pending = data.submissions.filter(s => s.status === 'pending').reduce((a, s) => a + Number(s.reward), 0);
-  const nav = [{ k: 'all', n: 'Overview', I: LayoutGrid }, ...(['game', 'video', 'task'] as Cat[]).map(k => ({ k, n: labels[k], I: icons[k] })), { k: 'stack', n: 'Stack game', I: Layers }, { k: 'wallet', n: 'My wallet', I: Wallet }, { k: 'activity', n: 'Activity', I: History }] as const;
+  const nav = [{ k: 'all', n: 'Overview', I: LayoutGrid }, ...(['game', 'video', 'task'] as Cat[]).map(k => ({ k, n: labels[k], I: icons[k] })), { k: 'box', n: 'Mystery box', I: Gift }, { k: 'stack', n: 'Stack game', I: Layers }, { k: 'wallet', n: 'My wallet', I: Wallet }, { k: 'activity', n: 'Activity', I: History }] as const;
   const name = data.profile.display_name || 'Member';
   const activeOffer = data.offers.find(o => o.id === active);
   return <div className="dashboard-shell">
@@ -68,8 +69,8 @@ function Dashboard() {
         <div className="dashboard-greeting"><span className="eyebrow">LET’S MAKE TODAY COUNT</span><h1>Hey, {name.split(' ')[0]} <span className="wave">✳</span></h1><p>A little spare time. A little more possibility.</p></div>
         {data.profile.banned && <div className="demo-notice"><X /><p>Your account is suspended. Contact support on WhatsApp.</p></div>}
         <div className="stat-grid"><div className="balance-stat"><span><Wallet /> Available balance</span><strong>{money(data.balance)}</strong><span>Ready to withdraw</span></div><div className="plain-stat"><span>Pending review</span><strong>{money(pending)}</strong><span>Awaiting approval</span></div><div className="plain-stat"><span>Offers available</span><strong>{data.offers.length}</strong><span>Find your next win.</span></div></div>
-        {view === 'stack' ? <StackGame onReward={refresh} /> : view === 'wallet' ? <section className="wallet-section"><h2>Your wallet.</h2><form className="admin-form" onSubmit={withdraw}><label>Amount ($, min 20)<input required type="number" min={MIN_CASHOUT} step="0.01" max={data.balance} value={amount} onChange={e => setAmount(e.target.value)} /></label><label>Method<select value={method} onChange={e => setMethod(e.target.value)}><option>PayPal</option><option>Bank transfer</option><option>Gift card</option></select></label><label>Payment details<input required maxLength={300} value={details} onChange={e => setDetails(e.target.value)} placeholder="PayPal email or account details" /></label><Button variant="ink" disabled={busy || data.balance < MIN_CASHOUT}>Request payment <ArrowUpRight /></Button></form><RowList rows={data.withdrawals.map(w => ({ id: w.id, title: `${w.method} withdrawal`, sub: new Date(w.created_at).toLocaleDateString(), right: `-${money(w.amount)}`, status: w.status }))} empty="No payment requests yet." /></section>
-        : view === 'activity' ? <section><h2>Your activity.</h2><RowList rows={[...data.submissions.map(s => ({ id: s.id, title: s.offer_title, sub: new Date(s.created_at).toLocaleDateString(), right: `+${money(s.reward)}`, status: s.status })), ...data.rewards.map(r => ({ id: r.id, title: r.kind === 'admin' ? 'Admin award' : `Stack reward · Level ${r.level}`, sub: new Date(r.started_at).toLocaleDateString(), right: `+${money(r.reward)}`, status: 'approved' }))]} empty="Complete your first offer to see it here." /></section>
+        {view === 'box' ? <MysteryBox onReward={refresh} /> : view === 'stack' ? <StackGame onReward={refresh} /> : view === 'wallet' ? <section className="wallet-section"><h2>Your wallet.</h2><form className="admin-form" onSubmit={withdraw}><label>Amount ($, min 20)<input required type="number" min={MIN_CASHOUT} step="0.01" max={data.balance} value={amount} onChange={e => setAmount(e.target.value)} /></label><label>Method<select value={method} onChange={e => setMethod(e.target.value)}><option>PayPal</option><option>Bank transfer</option><option>Gift card</option></select></label><label>Payment details<input required maxLength={300} value={details} onChange={e => setDetails(e.target.value)} placeholder="PayPal email or account details" /></label><Button variant="ink" disabled={busy || data.balance < MIN_CASHOUT}>Request payment <ArrowUpRight /></Button></form><RowList rows={data.withdrawals.map(w => ({ id: w.id, title: `${w.method} withdrawal`, sub: new Date(w.created_at).toLocaleDateString(), right: `-${money(w.amount)}`, status: w.status }))} empty="No payment requests yet." /></section>
+        : view === 'activity' ? <section><h2>Your activity.</h2><RowList rows={[...data.submissions.map(s => ({ id: s.id, title: s.offer_title, sub: new Date(s.created_at).toLocaleDateString(), right: `+${money(s.reward)}`, status: s.status })), ...data.rewards.map(r => ({ id: r.id, title: r.kind === 'admin' ? 'Admin award' : r.kind === 'box' ? 'Mystery box' : `Stack reward · Level ${r.level}`, sub: new Date(r.started_at).toLocaleDateString(), right: `+${money(r.reward)}`, status: 'approved' }))]} empty="Complete your first offer to see it here." /></section>
         : <><div className="dashboard-section-heading"><h2>Your next little win.</h2><span>{offers.length} offers</span></div>{offers.length ? <div className="dashboard-offers">{offers.map(o => { const repeatable = o.category === 'video'; const st = repeatable ? undefined : statusOf(o.id); const I = icons[o.category as Cat] ?? ListChecks; return <article className="offer-card" key={o.id}><div className={`way-art ${o.category}-art`}>{o.src ? <img src={o.src} alt={o.title} className="offer-img" loading="lazy" /> : <div className="art-object"><span><I /></span></div>}<span className="offer-credit">+{money(o.reward)}</span></div><div className="offer-body"><span className="offer-category"><I /> {labels[o.category as Cat]}</span><h3>{o.title}</h3><p>{o.description}</p>{repeatable ? <Button variant="ink" className="offer-start" disabled={data.profile.banned} onClick={() => watch(o)}><Play /> Watch & earn</Button> : <>{o.link && <a className="offer-link" href={o.link} target="_blank" rel="noopener noreferrer">Open offer <ArrowUpRight /></a>}<Button variant={st && st !== 'rejected' ? 'outline' : 'ink'} className="offer-start" disabled={!!st && st !== 'rejected'} onClick={() => setActive(o.id)}>{st === 'pending' ? 'Pending review' : st === 'approved' ? 'Completed' : st === 'rejected' ? 'Rejected – resubmit' : 'Submit proof'}</Button></>}</div></article>; })}</div> : <div className="history-empty"><History /><div><strong>No offers yet.</strong><p>New offers will appear here soon.</p></div></div>}</>}
         <footer className="dashboard-footer"><div className="dashboard-footer-social"><SocialLinks /></div><span>Small moments. More possibility.</span><Link to="/terms">Terms & conditions</Link></footer>
       </main></div>

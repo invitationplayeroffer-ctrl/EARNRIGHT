@@ -4,10 +4,9 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { money } from '@/lib/links';
 import poster from '@/assets/poster-stack.jpg';
-import { STACK_WAIT_SECONDS } from '@/lib/reward-rules';
-import { X } from 'lucide-react';
-
-const AD_URL = 'https://www.profitableratecpmnetwork.com/vwikgawy61?key=2733a9f76350db8589179208af49683e';
+import { STACK_WAIT_SECONDS, OFFER_AD_URL } from '@/lib/reward-rules';
+import { sfx, soundOn, setSoundOn } from '@/lib/sfx';
+import { Volume2, VolumeX, X } from 'lucide-react';
 const W = 300, H = 420, BH = 22, BLOCKS_PER_LEVEL = 5;
 type Block = { x: number; w: number };
 
@@ -48,15 +47,16 @@ function Game({ onReward }: { onReward: () => void }) {
     const top = s.stack[s.stack.length - 1];
     if (!top) return;
     const l = Math.max(top.x, s.cur.x), r = Math.min(top.x + top.w, s.cur.x + s.cur.w);
-    if (r - l <= 0) { s.over = true; setOver(true); setClaimLevel(level); return; }
+    if (r - l <= 0) { s.over = true; setOver(true); setClaimLevel(level); sfx.fail(); return; }
     s.stack.push({ x: l, w: r - l }); s.cur = { x: 0, w: r - l }; s.speed = Math.min(6, s.speed + 0.2);
     const n = s.stack.length - 1; setPlaced(n);
-    if (n % BLOCKS_PER_LEVEL === 0) { s.paused = true; setClaimLevel(n / BLOCKS_PER_LEVEL); }
+    sfx.drop();
+    if (n % BLOCKS_PER_LEVEL === 0) { s.paused = true; setClaimLevel(n / BLOCKS_PER_LEVEL); sfx.level(); }
   }
 
   async function claim() {
     if (claimLevel == null || claiming || pending.current != null) return;
-    const win = window.open(AD_URL, '_blank');
+    const win = window.open(OFFER_AD_URL, '_blank');
     if (!win) { toast.error('Allow pop-ups to open the ad.'); return; }
     win.opener = null;
     setClaiming(true);
@@ -76,7 +76,7 @@ function Game({ onReward }: { onReward: () => void }) {
       const { data, error } = await supabase.rpc('claim_game_reward', { _level: lv });
       if (error) { toast.error(error.message); return; }
       pending.current = null; setAwaiting(false);
-      toast.success(`+${money(Number(data))} collected`); onReward();
+      toast.success(`+${money(Number(data))} collected`); sfx.reward(); onReward();
       // Failed games remain claimable; each click starts a fresh timed ad session.
       if (!st.current.over) skip();
     } finally { collecting.current = false; }
@@ -94,10 +94,15 @@ function Game({ onReward }: { onReward: () => void }) {
   </section>;
 }
 
+function SoundToggle() {
+  const [on, setOn] = useState(soundOn());
+  return <Button type="button" variant="ghost" size="icon" className="stack-sound" aria-label={on ? 'Turn sounds off' : 'Turn sounds on'} onClick={() => { const n = !on; setOn(n); setSoundOn(n); if (n) sfx.tap(); }}>{on ? <Volume2 /> : <VolumeX />}</Button>;
+}
+
 export function StackGame({ onReward }: { onReward: () => void }) {
   const [open, setOpen] = useState(false);
   return <>
     <Button type="button" variant="ghost" aria-label="Play Stack game" className="stack-poster" onClick={() => setOpen(true)}><img src={poster} alt="Stack game poster" width={768} height={960} loading="lazy" /><span><strong>Stack & earn</strong>Tap to play</span></Button>
-    {open && <div className="stack-modal"><Button type="button" variant="ghost" size="icon" className="stack-close" aria-label="Close game" onClick={() => setOpen(false)}><X /></Button><Game onReward={onReward} /></div>}
+    {open && <div className="stack-modal"><Button type="button" variant="ghost" size="icon" className="stack-close" aria-label="Close game" onClick={() => setOpen(false)}><X /></Button><SoundToggle /><Game onReward={onReward} /></div>}
   </>;
 }
