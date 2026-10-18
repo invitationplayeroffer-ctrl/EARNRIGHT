@@ -195,6 +195,7 @@ export type Database = {
         Row: {
           awarded_by: string | null
           claimed: boolean
+          claimed_at: string | null
           id: string
           kind: string
           level: number | null
@@ -206,6 +207,7 @@ export type Database = {
         Insert: {
           awarded_by?: string | null
           claimed?: boolean
+          claimed_at?: string | null
           id?: string
           kind: string
           level?: number | null
@@ -217,6 +219,7 @@ export type Database = {
         Update: {
           awarded_by?: string | null
           claimed?: boolean
+          claimed_at?: string | null
           id?: string
           kind?: string
           level?: number | null
@@ -396,6 +399,8 @@ export type Database = {
         Args: { _request: string; _user: string }
         Returns: number
       }
+      box_status: { Args: never; Returns: Json }
+      claim_box_reward: { Args: never; Returns: number }
       claim_game_reward: { Args: { _level: number }; Returns: number }
       claim_video: { Args: { _offer: string }; Returns: number }
       complete_demo_activity: {
@@ -421,6 +426,7 @@ export type Database = {
         Args: { _approve: boolean; _id: string }
         Returns: undefined
       }
+      start_box_claim: { Args: never; Returns: undefined }
       start_demo_activity: { Args: { activity: string }; Returns: undefined }
       start_game_claim: { Args: { _level: number }; Returns: undefined }
       start_video: { Args: { _offer: string }; Returns: undefined }

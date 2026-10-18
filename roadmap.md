@@ -1,8 +1,13 @@
 - [x] One-time game/task offers with proof question and screenshot
 - [x] Unlimited videos auto-credited on return
-- [x] Welcome posters for game/video/task
-- [ ] Repeatable Stack claims after failure
-- [ ] New welcome reward/game backgrounds without blinking
-- [ ] $5 signup bonus, $20 cashout, admin $10 awards with tests
+- [x] Repeatable Stack claims after failure
+- [x] $5 signup bonus, $20 cashout, admin $10 awards
+- [x] New welcome backgrounds without blinking
+- [x] New landing posters for games / videos / tasks
+- [x] Replace Instagram icon with Telegram (t.me/EarnRightReward)
+- [ ] Mystery box: 3D box, $0.05-$0.10, 5s offer visit, 10 minute cooldown
+- [ ] Sounds in Stack game and on box open
+- [ ] Mobile check across welcome, dashboard, box and admin
+- [ ] Verify box and stack reward flows in the browser
 - [ ] Vercel hosting configuration and honest deployment verification
 - [ ] End-to-end verification of changed reward flows
